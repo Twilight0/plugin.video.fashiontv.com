@@ -1,0 +1,9 @@
+# Kodi Media Center language file
+# Addon Name: Fashion TV Player
+# Addon id: plugin.video.fashiontv.com
+# Addon version: 1.0.0
+# Addon Provider: twilight0
+
+msgctxt "#30001"
+msgid ""
+msgstr ""

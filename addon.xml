@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.fashiontv.com" version="0.0.1~alpha1" name="Fashion TV Player" provider-name="Twilight0">
+	<requires>
+		<import addon="xbmc.python" version="2.24.0" />
+		<import addon="script.module.tulip" version="2.5.11" />
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="addon.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<reuselanguageinvoker>false</reuselanguageinvoker>
+		<summary lang="en_GB">Fashion TV Player addon for Kodi</summary>
+        <summary lang="en_GR">Πρόσθετο Fashion TV Player για το Kodi</summary>
+		<description lang="en_GB">Fashion TV live and on-demand broadcasts</description>
+		<description lang="el_GR">Ζωντανές και on demand υπηρεσίες του Fashion TV</description>
+		<disclaimer lang="en_GB">This addon is not published nor endorsed by fashiontv.com</disclaimer>
+		<disclaimer lang="el_GR">Το πρόσθετο αυτό δεν έχει δημοσιευθεί ούτε εγκριθεί από το fashiontv.com</disclaimer>
+		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
+		<source>https://github.com/Twilight0/plugin.video.fashiontv.com</source>
+		<website>https://www.fashiontv.com/</website>
+		<size>228454</size>
+		<news>[B]0.0.1~alpha1[/B]
+- Initial version</news>
+		<assets>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
+		</assets>
+		<platform>all</platform>
+		<language>en el</language>
+		<!--<forum></forum>-->
+		<!--<email></email>-->
+	</extension>
+</addon>
