@@ -114,9 +114,14 @@ class Indexer:
 
         for item in items:
 
-            title = itertags_wrapper(item.text, 'div', attrs={'class': 'a2a_kit a2a_kit_size_24 addtoany_list'}, ret='data-a2a-title')[0]
-            image = itertags_wrapper(item.text, 'img', attrs={'class': 'horizontal-thumbnail'}, ret='data-src')[0]
             url = itertags_wrapper(item.text, 'a', attrs={'class': 'live-stream-button full-overlay'}, ret='data-source')[0]
+
+            if 'cloudycdn.services' not in url:
+                continue
+
+            title = itertags_wrapper(item.text, 'div', attrs={'class': 'a2a_kit a2a_kit_size_24 addtoany_list'}, ret='data-a2a-title')[0]
+            title = client.replaceHTMLCodes(title)
+            image = itertags_wrapper(item.text, 'img', attrs={'class': 'horizontal-thumbnail'}, ret='data-src')[0]
 
             data = {'title': title, 'image': image, 'url': url}
 
@@ -160,6 +165,8 @@ class Indexer:
         mimetype = None
         manifest_type = None
 
+        leia_plus = control.kodi_version() >= 18.0
+
         if '.m3u8' in url:
 
             manifest_type = 'hls'
@@ -170,8 +177,8 @@ class Indexer:
             manifest_type = 'mpd'
 
         directory.resolve(
-            self.resolve(url), dash=addon_enabled and ('.m3u8' in url or '.mpd' in url), mimetype=mimetype,
-            manifest_type=manifest_type
+            self.resolve(url), dash=addon_enabled and ('.m3u8' in url or '.mpd' in url) and leia_plus,
+            mimetype=mimetype, manifest_type=manifest_type
         )
 
     def keys_registration(self):
@@ -204,13 +211,15 @@ class Indexer:
         except KeyError:
             addon_enabled = False
 
+        leia_plus = control.kodi_version() >= 18.0
+
         first_time_file = control.join(control.dataPath, 'first_time')
 
-        if not addon_enabled and not file_exists(first_time_file):
+        if not addon_enabled and not file_exists(first_time_file) and leia_plus:
 
             try:
 
-                yes = control.yesnoDialog(control.lang(30252))
+                yes = control.yesnoDialog(control.lang(30003))
 
                 if yes:
 
