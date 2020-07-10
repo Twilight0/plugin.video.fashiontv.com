@@ -116,9 +116,6 @@ class Indexer:
 
             url = itertags_wrapper(item.text, 'a', attrs={'class': 'live-stream-button full-overlay'}, ret='data-source')[0]
 
-            if 'cloudycdn.services' not in url:
-                continue
-
             title = itertags_wrapper(item.text, 'div', attrs={'class': 'a2a_kit a2a_kit_size_24 addtoany_list'}, ret='data-a2a-title')[0]
             title = client.replaceHTMLCodes(title)
             image = itertags_wrapper(item.text, 'img', attrs={'class': 'horizontal-thumbnail'}, ret='data-src')[0]
@@ -149,9 +146,18 @@ class Indexer:
     @staticmethod
     def resolve(url):
 
+        if 'megogo' in url:
+
+            vid = re.search(r'id=(\d+)', url).group(1)
+            url = 'https://embed.megogo.ru/aprx/stream?video_id={}'.format(vid)
+
         html = client.request(url)
 
-        stream = 'https:' + re.search(r"'(.+m3u8)'", html).group(1)
+        if 'megogo' in url:
+            js = json.loads(html)
+            stream = js.get('data', {}).get('src')
+        else:
+            stream = 'https:' + re.search(r"'(.+m3u8)'", html).group(1)
 
         return stream
 
@@ -167,19 +173,20 @@ class Indexer:
 
         leia_plus = control.kodi_version() >= 18.0
 
-        if '.m3u8' in url:
+        stream = self.resolve(url)
+
+        if '.m3u8' in stream:
 
             manifest_type = 'hls'
             mimetype = 'application/vnd.apple.mpegurl'
 
-        elif '.mpd' in url:
+        elif '.mpd' in stream:
 
             manifest_type = 'mpd'
 
-        directory.resolve(
-            self.resolve(url), dash=addon_enabled and ('.m3u8' in url or '.mpd' in url) and leia_plus,
-            mimetype=mimetype, manifest_type=manifest_type
-        )
+        dash = addon_enabled and ('.m3u8' in stream or '.mpd' in stream)
+
+        directory.resolve(stream, dash=dash and leia_plus, mimetype=mimetype, manifest_type=manifest_type)
 
     def keys_registration(self):
 
