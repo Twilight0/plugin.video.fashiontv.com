@@ -36,6 +36,7 @@ class Indexer:
         self.ftv_hot_yt_channel = 'UCDN6BTcfgHDuBQgCgXkU-cA'
         self.ftv_parties_yt_channel = 'UCLiyW3PZFDSxIw6EES8MneQ'
         self.ftv_asia_yt_channel = 'UCC2Iic6b-nhY7CSRUm_nyng'
+        self.ftv_news_channel = 'UCi12i9eiWFh67T-uCP1y7Gw'
         self.scramble = (
             'eJwVzNsKgjAAANBfkT2XTMW59SYSYmWgkdGTjDnmfeomMaN/Dz/gnC9oKnCyAPIQDBzi+xB5R8hmriBkNUHSHT1PuBBL'
             '7NS+I4l2MLLpNClbSCl6viq+MDlqPmqbyQEcLECnpuy42dsw2ejDRGc0yyII1ix95Ui4Q1JsbabwR88zLa8m3ZXibOF6R'
@@ -90,6 +91,14 @@ class Indexer:
                 'action': 'youtube',
                 'image': 'https://yt3.ggpht.com/a/AATXAJxhBT9-z8FzvWbOZqbwzlKMaG9ib7NdRQVvhu3T=s256',
                 'url': self.ftv_parties_yt_channel,
+                'isFolder': 'False', 'isPlayable': 'False'
+            }
+            ,
+            {
+                'title': 'FashionTV News',
+                'action': 'youtube',
+                'image': 'https://yt3.ggpht.com/a/AATXAJxw6UfiplqVo8OHZdMhoZAPOwcyjiKQQSYbdOaH=s256',
+                'url': self.ftv_news_channel,
                 'isFolder': 'False', 'isPlayable': 'False'
             }
         ]
