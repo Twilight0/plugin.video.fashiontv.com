@@ -28,6 +28,22 @@ msgctxt "#30003"
 msgid "Inputstream addon is not enabled,[CR]do you want to enable it now?"
 msgstr "Το πρόσθετο inputstream δεν είναι ενεργοποιημένο,[CR]θέλετε να το ενεργοποιήσετε τώρα;"
 
+msgctxt "#30004"
+msgid "Add to Fashion TV's bookmarks"
+msgstr "Προσθήκη στους σελιδοδείκτες του Fashion TV"
+
+msgctxt "#30005"
+msgid "Bookmarks"
+msgstr "Σελιδοδείκτες"
+
+msgctxt "#30006"
+msgid "Delete from bookmarks"
+msgstr "Διαγραφή από τους σελιδοδείκτες"
+
+msgctxt "#30007"
+msgid "No bookmarks found"
+msgstr "Δεν βρέθηκαν σελιδοδείκτες"
+
 msgctxt "#30402"
 msgid "OK"
 msgstr "OK"

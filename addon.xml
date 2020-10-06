@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.fashiontv.com" version="1.0.3" name="Fashion TV Player" provider-name="Twilight0">
+<addon id="plugin.video.fashiontv.com" version="1.1.0" name="Fashion TV Player" provider-name="Twilight0">
 	<requires>
 		<import addon="xbmc.python" version="2.24.0" />
 		<import addon="script.module.tulip" version="2.6.10" />
@@ -8,6 +8,23 @@
 	<extension point="xbmc.python.pluginsource" library="addon.py">
 		<provides>video</provides>
 	</extension>
+	<extension point="kodi.context.item">
+        <menu id="kodi.core.main">
+            <item library="resources/lib/youtube_bookmark.py">
+                <label>30004</label>
+                <visible>
+					[String.StartsWith(Container.FolderPath,plugin://plugin.video.youtube/channel/UCqzju-_WMKsgNx8R3QwupQQ/) |
+					String.StartsWith(Container.FolderPath,plugin://plugin.video.youtube/channel/UClnblsrZrugJfFs4ANPgNcA/) |
+					String.StartsWith(Container.FolderPath,plugin://plugin.video.youtube/channel/UCDN6BTcfgHDuBQgCgXkU-cA/) |
+					String.StartsWith(Container.FolderPath,plugin://plugin.video.youtube/channel/UCLiyW3PZFDSxIw6EES8MneQ/) |
+					String.StartsWith(Container.FolderPath,plugin://plugin.video.youtube/channel/UCC2Iic6b-nhY7CSRUm_nyng/) |
+					String.StartsWith(Container.FolderPath,plugin://plugin.video.youtube/channel/UCi12i9eiWFh67T-uCP1y7Gw/)] +
+                    !String.Contains(ListItem.Art(thumb),resources/media) +
+                    !String.Contains(ListItem.FolderPath,page_token)
+                </visible>
+            </item>
+        </menu>
+    </extension>
 	<extension point="xbmc.addon.metadata">
 		<reuselanguageinvoker>false</reuselanguageinvoker>
 		<summary lang="en_GB">Fashion TV Player addon for Kodi</summary>
@@ -16,11 +33,14 @@
 		<description lang="el_GR">Ζωντανές και on demand υπηρεσίες του Fashion TV</description>
 		<disclaimer lang="en_GB">This addon is not published nor endorsed by fashiontv.com</disclaimer>
 		<disclaimer lang="el_GR">Το πρόσθετο αυτό δεν έχει δημοσιευθεί ούτε εγκριθεί από το fashiontv.com</disclaimer>
-		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
+		<license>GPL-3.0-only</license>
 		<source>https://github.com/Twilight0/plugin.video.fashiontv.com</source>
 		<website>https://www.fashiontv.com/</website>
 		<size>228454</size>
-		<news>[B]1.0.3[/B]
+		<news>[B]1.1.0[/B]
+- Add bookmarking feature
+
+[B]1.0.3[/B]
 - Added FTV news channel
 
 [B]1.0.2[/B]
