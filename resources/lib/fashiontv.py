@@ -11,267 +11,207 @@
 from __future__ import absolute_import
 
 import json, re
-from os.path import exists as file_exists
-from tulip import directory, client, cache, control, bookmarks
+
+from tulip import directory, client, cache, control, bookmarks as _bookmarks
 from tulip.parsers import itertags_wrapper
+from tulip.url_dispatcher import urldispatcher
 from tulip.compat import iteritems
-from base64 import b64decode
-from zlib import decompress
-from youtube_registration import register_api_keys
-
-
-class Indexer:
-
-    def __init__(self):
-
-        self.list = []
-        self.main_link = 'https://www.fashiontv.com/'
-        self.fashion_tv_yt_channel = 'UCqzju-_WMKsgNx8R3QwupQQ'
-        self.ftv_yt_channel = 'UClnblsrZrugJfFs4ANPgNcA'
-        self.ftv_hot_yt_channel = 'UCDN6BTcfgHDuBQgCgXkU-cA'
-        self.ftv_parties_yt_channel = 'UCLiyW3PZFDSxIw6EES8MneQ'
-        self.ftv_asia_yt_channel = 'UCC2Iic6b-nhY7CSRUm_nyng'
-        self.ftv_news_channel = 'UCi12i9eiWFh67T-uCP1y7Gw'
-        self.scramble = (
-            'eJwVzNsKgjAAANBfkT2XTMW59SYSYmWgkdGTjDnmfeomMaN/Dz/gnC9oKnCyAPIQDBzi+xB5R8hmriBkNUHSHT1PuBBL'
-            '7NS+I4l2MLLpNClbSCl6viq+MDlqPmqbyQEcLECnpuy42dsw2ejDRGc0yyII1ix95Ui4Q1JsbabwR88zLa8m3ZXibOF6R'
-            '2/TB2HcVreCXkS8LU/Y5RG5b+D3Bwj/Nu0='
-        )
-
-        self.keys_registration()
-        self.check_inputstream_addon()
-
-    def root(self):
-
-        self.list = [
-            {
-                'title': control.lang(30001),
-                'action': 'live'
-            }
-            ,
-            {
-                'title': 'Fashion TV',
-                'action': 'youtube',
-                'image': 'https://yt3.ggpht.com/a/AATXAJxZonaXhogfs_ioQnbxlhR7NpepOecdrBYzbHmOm1k=s256',
-                'url': self.fashion_tv_yt_channel,
-                'isFolder': 'False', 'isPlayable': 'False'
-            }
-            ,
-            {
-                'title': 'FTV',
-                'action': 'youtube',
-                'image': 'https://yt3.ggpht.com/a/AATXAJxLtsDGDS6pB9XFt_2wIe3UrG9BU3UW7qVscEQgSg=s256',
-                'url': self.ftv_yt_channel,
-                'isFolder': 'False', 'isPlayable': 'False'
-            }
-            ,
-            {
-                'title': 'FTV HOT',
-                'action': 'youtube',
-                'image': 'https://yt3.ggpht.com/a/AATXAJxJIFyHhkMeUbmMEIahbXB8tOe5rQOHMIYjvFh21w=s256',
-                'url': self.ftv_hot_yt_channel,
-                'isFolder': 'False', 'isPlayable': 'False'
-            }
-            ,
-            {
-                'title': 'FashionTV Parties',
-                'action': 'youtube',
-                'image': 'https://yt3.ggpht.com/a/AATXAJwiPGuSb3438Ql1kh1Je6YLaWj52skL7MKHgaUJ=s256',
-                'url': self.ftv_parties_yt_channel,
-                'isFolder': 'False', 'isPlayable': 'False'
-            }
-            ,
-            {
-                'title': 'FashionTV Asia',
-                'action': 'youtube',
-                'image': 'https://yt3.ggpht.com/a/AATXAJxhBT9-z8FzvWbOZqbwzlKMaG9ib7NdRQVvhu3T=s256',
-                'url': self.ftv_parties_yt_channel,
-                'isFolder': 'False', 'isPlayable': 'False'
-            }
-            ,
-            {
-                'title': 'FashionTV News',
-                'action': 'youtube',
-                'image': 'https://yt3.ggpht.com/a/AATXAJxw6UfiplqVo8OHZdMhoZAPOwcyjiKQQSYbdOaH=s256',
-                'url': self.ftv_news_channel,
-                'isFolder': 'False', 'isPlayable': 'False'
-            }
-            ,
-            {
-                'title': control.lang(30005),
-                'action': 'bookmarks',
-                'icon': 'bookmarks.jpg'
-            }
-        ]
-
-        plugin = 'plugin://plugin.video.youtube/channel/'
-        cache_clear = {'title': 30002, 'query': {'action': 'cache_clear'}}
-
-        for item in self.list:
-
-            if item['action'] == 'youtube':
-                item['url'] = ''.join([plugin, item['url'], '/?addon_id=', control.addonInfo('id')])
-
-            item.update({'cm': [cache_clear]})
-
-        directory.add(self.list)
-
-    def bookmarks(self):
+from .constants import *
+from .utils import keys_registration
+
+
+@urldispatcher.register('root')
+def root():
+
+    self_list = [
+        {
+            'title': control.lang(30001),
+            'action': 'live'
+        }
+        ,
+        {
+            'title': 'Fashion TV',
+            'action': 'youtube',
+            'image': 'https://yt3.ggpht.com/a/AATXAJxZonaXhogfs_ioQnbxlhR7NpepOecdrBYzbHmOm1k=s256',
+            'url': fashion_tv_yt_channel,
+            'isFolder': 'False', 'isPlayable': 'False'
+        }
+        ,
+        {
+            'title': 'FTV',
+            'action': 'youtube',
+            'image': 'https://yt3.ggpht.com/a/AATXAJxLtsDGDS6pB9XFt_2wIe3UrG9BU3UW7qVscEQgSg=s256',
+            'url': ftv_yt_channel,
+            'isFolder': 'False', 'isPlayable': 'False'
+        }
+        ,
+        {
+            'title': 'FTV HOT',
+            'action': 'youtube',
+            'image': 'https://yt3.ggpht.com/a/AATXAJxJIFyHhkMeUbmMEIahbXB8tOe5rQOHMIYjvFh21w=s256',
+            'url': ftv_hot_yt_channel,
+            'isFolder': 'False', 'isPlayable': 'False'
+        }
+        ,
+        {
+            'title': 'FashionTV Parties',
+            'action': 'youtube',
+            'image': 'https://yt3.ggpht.com/a/AATXAJwiPGuSb3438Ql1kh1Je6YLaWj52skL7MKHgaUJ=s256',
+            'url': ftv_parties_yt_channel,
+            'isFolder': 'False', 'isPlayable': 'False'
+        }
+        ,
+        {
+            'title': 'FashionTV Asia',
+            'action': 'youtube',
+            'image': 'https://yt3.ggpht.com/a/AATXAJxhBT9-z8FzvWbOZqbwzlKMaG9ib7NdRQVvhu3T=s256',
+            'url': ftv_parties_yt_channel,
+            'isFolder': 'False', 'isPlayable': 'False'
+        }
+        ,
+        {
+            'title': 'FashionTV News',
+            'action': 'youtube',
+            'image': 'https://yt3.ggpht.com/a/AATXAJxw6UfiplqVo8OHZdMhoZAPOwcyjiKQQSYbdOaH=s256',
+            'url': ftv_news_channel,
+            'isFolder': 'False', 'isPlayable': 'False'
+        }
+        ,
+        {
+            'title': control.lang(30005),
+            'action': 'bookmarks',
+            'icon': 'bookmarks.jpg'
+        }
+    ]
 
-        self.list = bookmarks.get()
+    plugin = 'plugin://plugin.video.youtube/channel/'
+    clear_cache = {'title': 30002, 'query': {'action': 'clear_cache'}}
 
-        if not self.list:
-            na = [{'title': control.lang(30007), 'action': None}]
-            directory.add(na)
-            return
+    for item in self_list:
 
-        for i in self.list:
-            bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
-            bookmark['delbookmark'] = i['url']
-            i.update({'cm': [{'title': 30006, 'query': {'action': 'deleteBookmark', 'url': json.dumps(bookmark)}}]})
+        if item['action'] == 'youtube':
+            item['url'] = ''.join([plugin, item['url'], '/?addon_id=', control.addonInfo('id')])
 
-        control.sortmethods()
-        control.sortmethods('title')
+        item.update({'cm': [clear_cache]})
 
-        directory.add(self.list, content='videos')
+    directory.add(self_list)
 
-    def list_live_items(self):
 
-        html = client.request(self.main_link)
+@urldispatcher.register('bookmarks')
+def bookmarks():
 
-        items = itertags_wrapper(html, 'article', attrs={'id': 'stream-.+'})
+    self_list = _bookmarks.get()
 
-        for item in items:
+    if not self_list:
+        na = [{'title': control.lang(30007), 'action': None}]
+        directory.add(na)
+        return
 
-            url = itertags_wrapper(item.text, 'a', attrs={'class': 'live-stream-button full-overlay'}, ret='data-source')[0]
+    for i in self_list:
+        bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
+        bookmark['delbookmark'] = i['url']
+        i.update({'cm': [{'title': 30006, 'query': {'action': 'deleteBookmark', 'url': json.dumps(bookmark)}}]})
 
-            title = itertags_wrapper(item.text, 'div', attrs={'class': 'a2a_kit a2a_kit_size_24 addtoany_list'}, ret='data-a2a-title')[0]
-            title = client.replaceHTMLCodes(title)
-            image = itertags_wrapper(item.text, 'img', attrs={'class': 'horizontal-thumbnail'}, ret='data-src')[0]
+    control.sortmethods()
+    control.sortmethods('title')
 
-            data = {'title': title, 'image': image, 'url': url}
+    directory.add(self_list, content='videos')
 
-            self.list.append(data)
 
-        return self.list
+def list_live_items():
 
-    def live(self):
+    html = client.request(main_link)
 
-        self.list = cache.get(self.list_live_items, 24)
+    items = itertags_wrapper(html, 'article', attrs={'id': 'stream-.+'})
 
-        if self.list is None:
-            return
+    self_list = []
 
-        for item in self.list:
+    for item in items:
 
-            item.update({'action': 'play', 'isFolder': 'False'})
-            bookmark = dict((k, v) for k, v in iteritems(item) if not k == 'next')
-            bookmark['delbookmark'] = item['url']
-            item.update({'cm': [{'title': 30004, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+        url = itertags_wrapper(item.text, 'a', attrs={'class': 'live-stream-button full-overlay'}, ret='data-source')[0]
 
-        control.sortmethods()
-        control.sortmethods('title')
+        title = itertags_wrapper(item.text, 'div', attrs={'class': 'a2a_kit a2a_kit_size_24 addtoany_list'}, ret='data-a2a-title')[0]
+        title = client.replaceHTMLCodes(title)
+        image = itertags_wrapper(item.text, 'img', attrs={'class': 'horizontal-thumbnail'}, ret='data-src')[0]
 
-        directory.add(self.list, content='videos')
+        data = {'title': title, 'image': image, 'url': url}
 
-    @staticmethod
-    def yt(url):
+        self_list.append(data)
 
-        control.execute('Container.Update({},return)'.format(url))
+    return self_list
 
-    @staticmethod
-    def resolve(url):
 
-        if 'megogo' in url:
+@urldispatcher.register('live')
+def live():
 
-            vid = re.search(r'id=(\d+)', url).group(1)
-            url = 'https://embed.megogo.ru/aprx/stream?video_id={}'.format(vid)
+    self_list = cache.get(list_live_items, 24)
 
-        html = client.request(url)
+    if self_list is None:
+        return
 
-        if 'megogo' in url:
-            js = json.loads(html)
-            stream = js.get('data', {}).get('src')
-        else:
-            stream = 'https:' + re.search(r"'(.+m3u8)'", html).group(1)
+    for item in self_list:
 
-        return stream
+        item.update({'action': 'play', 'isFolder': 'False'})
+        bookmark = dict((k, v) for k, v in iteritems(item) if not k == 'next')
+        bookmark['delbookmark'] = item['url']
+        item.update({'cm': [{'title': 30004, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
 
-    def play(self, url):
+    control.sortmethods()
+    control.sortmethods('title')
 
-        try:
-            addon_enabled = control.addon_details('inputstream.adaptive').get('enabled')
-        except KeyError:
-            addon_enabled = False
+    directory.add(self_list, content='videos')
 
-        mimetype = None
-        manifest_type = None
 
-        leia_plus = control.kodi_version() >= 18.0
+@urldispatcher.register('youtube', ['url'])
+def yt(url):
 
-        stream = self.resolve(url)
+    keys_registration()
 
-        if '.m3u8' in stream:
+    control.execute('Container.Update({},return)'.format(url))
 
-            manifest_type = 'hls'
-            mimetype = 'application/vnd.apple.mpegurl'
 
-        elif '.mpd' in stream:
+def resolve(url):
 
-            manifest_type = 'mpd'
+    if 'megogo' in url:
 
-        dash = addon_enabled and ('.m3u8' in stream or '.mpd' in stream)
+        vid = re.search(r'id=(\d+)', url).group(1)
+        url = 'https://embed.megogo.ru/aprx/stream?video_id={}'.format(vid)
 
-        directory.resolve(stream, dash=dash and leia_plus, mimetype=mimetype, manifest_type=manifest_type)
+    html = client.request(url)
 
-    def keys_registration(self):
+    if 'megogo' in url:
+        js = json.loads(html)
+        stream = js.get('data', {}).get('src')
+    else:
+        stream = 'https:' + re.search(r"'(.+m3u8)'", html).group(1)
 
-        filepath = control.transPath(control.join(control.addon('plugin.video.youtube').getAddonInfo('profile'), 'api_keys.json'))
+    return stream
 
-        setting = control.addon('plugin.video.youtube').getSetting('youtube.allow.dev.keys') == 'true'
 
-        if file_exists(filepath):
+@urldispatcher.register('play', ['url'])
+def play(url):
 
-            f = open(filepath)
-    
-            jsonstore = json.load(f)
+    try:
+        addon_enabled = control.addon_details('inputstream.adaptive').get('enabled')
+    except KeyError:
+        addon_enabled = False
 
-            no_keys = control.addonInfo('id') not in jsonstore.get('keys', 'developer').get('developer')
+    mimetype = None
+    manifest_type = None
 
-            if setting and no_keys: 
-    
-                keys = json.loads(decompress(b64decode(self.scramble)))
-    
-                register_api_keys(control.addonInfo('id'), keys['api_key'], keys['id'], keys['secret'])
-    
-            f.close()
+    leia_plus = control.kodi_version() >= 18.0
 
-    @staticmethod
-    def check_inputstream_addon():
+    stream = resolve(url)
 
-        try:
-            addon_enabled = control.addon_details('inputstream.adaptive').get('enabled')
-        except KeyError:
-            addon_enabled = False
+    if '.m3u8' in stream:
 
-        leia_plus = control.kodi_version() >= 18.0
+        manifest_type = 'hls'
+        mimetype = 'application/vnd.apple.mpegurl'
 
-        first_time_file = control.join(control.dataPath, 'first_time')
+    elif '.mpd' in stream:
 
-        if not addon_enabled and not file_exists(first_time_file) and leia_plus:
+        manifest_type = 'mpd'
 
-            try:
+    dash = addon_enabled and ('.m3u8' in stream or '.mpd' in stream)
 
-                yes = control.yesnoDialog(control.lang(30003))
-
-                if yes:
-
-                    control.enable_addon('inputstream.adaptive')
-                    control.infoDialog(control.lang(30402))
-
-                with open(first_time_file, 'a'):
-                    pass
-
-            except Exception:
-
-                pass
+    directory.resolve(stream, dash=dash and leia_plus, mimetype=mimetype, manifest_type=manifest_type)
