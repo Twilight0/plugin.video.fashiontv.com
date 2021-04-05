@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.fashiontv.com" version="1.2.0" name="Fashion TV Player" provider-name="Twilight0">
+<addon id="plugin.video.fashiontv.com" version="1.3.0" name="Fashion TV Player" provider-name="Twilight0">
 	<requires>
 		<import addon="xbmc.addon" version="16.1.000"/>
-		<import addon="script.module.tulip" version="2.8.1" />
-		<import addon="plugin.video.youtube" version="6.8.2"/>
+		<import addon="script.module.tulip" version="2.8.17" />
+		<import addon="plugin.video.youtube" version="6.8.10"/>
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="addon.py">
 		<provides>video</provides>
@@ -37,7 +37,13 @@
 		<source>https://github.com/Twilight0/plugin.video.fashiontv.com</source>
 		<website>https://www.fashiontv.com/</website>
 		<size>228454</size>
-		<news>[B]1.2.0[/B]
+		<news>[B]1.3.0[/B]
+- Change cache method
+- Place youtube channels on submenu
+- Change main label from "Live" to "Fashion TV Live"
+- Remove check for inputstream addon
+
+[B]1.2.0[/B]
 - Update youtube api keys
 - Rework of router scheme
 - Tweaks for Matrix

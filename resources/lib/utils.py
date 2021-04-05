@@ -51,39 +51,9 @@ def keys_registration():
         f.close()
 
 
-def check_inputstream_addon():
-
-    try:
-        addon_enabled = control.addon_details('inputstream.adaptive').get('enabled')
-    except KeyError:
-        addon_enabled = False
-
-    leia_plus = control.kodi_version() >= 18.0
-
-    first_time_file = control.join(control.dataPath, 'first_time')
-
-    if not addon_enabled and not file_exists(first_time_file) and leia_plus:
-
-        try:
-
-            yes = control.yesnoDialog(control.lang(30003))
-
-            if yes:
-
-                control.enable_addon('inputstream.adaptive')
-                control.infoDialog(control.lang(30402))
-
-            with open(first_time_file, 'a'):
-                pass
-
-        except Exception:
-
-            pass
-
-
 @urldispatcher.register('clear_cache')
 def clear_cache():
-    cache.clear(withyes=False, label_success=30084)
+    cache.FunctionCache().reset_cache(notify=True)
 
 
 @urldispatcher.register('addBookmark', ['url'])

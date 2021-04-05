@@ -17,8 +17,8 @@ msgid ""
 msgstr ""
 
 msgctxt "#30001"
-msgid "Live"
-msgstr "Ζωντανά"
+msgid "Fashion TV Live"
+msgstr "Ζωντανά από το Fashion TV"
 
 msgctxt "#30002"
 msgid "Clear addon's cache"

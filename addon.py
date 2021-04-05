@@ -21,8 +21,6 @@ def main(argv=None):
 
     if sys.argv: argv = sys.argv
 
-    utils.check_inputstream_addon()
-
     params = dict(parse_qsl(argv[2][1:]))
     action = params.get('action', 'root')
     urldispatcher.dispatch(action, params)

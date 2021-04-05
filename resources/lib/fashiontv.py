@@ -20,6 +20,9 @@ from .constants import *
 from .utils import keys_registration
 
 
+cache_function = cache.FunctionCache().cache_function
+
+
 @urldispatcher.register('root')
 def root():
 
@@ -29,6 +32,26 @@ def root():
             'action': 'live'
         }
         ,
+        {
+            'title': control.lang(30003),
+            'action': 'yt_channels',
+            'image': 'https://yt3.ggpht.com/a/AATXAJxLtsDGDS6pB9XFt_2wIe3UrG9BU3UW7qVscEQgSg=s256'
+        }
+        ,
+        {
+            'title': control.lang(30005),
+            'action': 'bookmarks',
+            'icon': 'bookmarks.jpg'
+        }
+    ]
+
+    directory.add(self_list)
+
+
+@urldispatcher.register('yt_channels')
+def yt_channels():
+
+    self_list = [
         {
             'title': 'Fashion TV',
             'action': 'youtube',
@@ -76,12 +99,6 @@ def root():
             'url': ftv_news_channel,
             'isFolder': 'False', 'isPlayable': 'False'
         }
-        ,
-        {
-            'title': control.lang(30005),
-            'action': 'bookmarks',
-            'icon': 'bookmarks.jpg'
-        }
     ]
 
     plugin = 'plugin://plugin.video.youtube/channel/'
@@ -118,6 +135,7 @@ def bookmarks():
     directory.add(self_list, content='videos')
 
 
+@cache_function(1440)
 def list_live_items():
 
     html = client.request(main_link)
@@ -144,7 +162,7 @@ def list_live_items():
 @urldispatcher.register('live')
 def live():
 
-    self_list = cache.get(list_live_items, 24)
+    self_list = list_live_items()
 
     if self_list is None:
         return

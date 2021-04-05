@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 
 msgctxt "#30001"
-msgid "Live"
+msgid "Fashion TV Live"
 msgstr ""
 
 msgctxt "#30002"
@@ -25,7 +25,7 @@ msgid "Clear addon's cache"
 msgstr ""
 
 msgctxt "#30003"
-msgid "Inputstream addon is not enabled,[CR]do you want to enable it now?"
+msgid "Youtube Channels"
 msgstr ""
 
 msgctxt "#30004"
