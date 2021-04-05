@@ -25,8 +25,8 @@ msgid "Clear addon's cache"
 msgstr "Διαγραφή μνήμης προσθέτου"
 
 msgctxt "#30003"
-msgid "Inputstream addon is not enabled,[CR]do you want to enable it now?"
-msgstr "Το πρόσθετο inputstream δεν είναι ενεργοποιημένο,[CR]θέλετε να το ενεργοποιήσετε τώρα;"
+msgid "Youtube Channels"
+msgstr "Κανάλια Youtube"
 
 msgctxt "#30004"
 msgid "Add to Fashion TV's bookmarks"
