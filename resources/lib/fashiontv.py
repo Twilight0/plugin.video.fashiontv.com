@@ -45,6 +45,10 @@ def root():
         }
     ]
 
+    for item in self_list:
+        clear_cache = {'title': 30002, 'query': {'action': 'clear_cache'}}
+        item.update({'cm': [clear_cache]})
+
     directory.add(self_list)
 
 
@@ -102,14 +106,10 @@ def yt_channels():
     ]
 
     plugin = 'plugin://plugin.video.youtube/channel/'
-    clear_cache = {'title': 30002, 'query': {'action': 'clear_cache'}}
 
     for item in self_list:
 
-        if item['action'] == 'youtube':
-            item['url'] = ''.join([plugin, item['url'], '/?addon_id=', control.addonInfo('id')])
-
-        item.update({'cm': [clear_cache]})
+        item['url'] = ''.join([plugin, item['url'], '/?addon_id=', control.addonInfo('id')])
 
     directory.add(self_list)
 
