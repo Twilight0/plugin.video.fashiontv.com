@@ -167,6 +167,8 @@ def live():
     if self_list is None:
         return
 
+    self_list = [dict(t) for t in {tuple(d.items()) for d in self_list}]
+
     for item in self_list:
 
         item.update({'action': 'play', 'isFolder': 'False'})
