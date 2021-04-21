@@ -13,7 +13,7 @@ from __future__ import absolute_import
 import json, re
 
 from tulip import directory, client, cache, control, bookmarks as _bookmarks
-from tulip.parsers import itertags_wrapper
+from tulip.parsers import parseDOM2
 from tulip.url_dispatcher import urldispatcher
 from tulip.compat import iteritems
 from .constants import *
@@ -140,17 +140,16 @@ def list_live_items():
 
     html = client.request(main_link)
 
-    items = itertags_wrapper(html, 'article', attrs={'id': 'stream-.+'})
+    items = parseDOM2(html, 'article', attrs={'id': re.compile(r'stream-.+')})
 
     self_list = []
 
     for item in items:
 
-        url = itertags_wrapper(item.text, 'a', attrs={'class': 'live-stream-button full-overlay'}, ret='data-source')[0]
-
-        title = itertags_wrapper(item.text, 'div', attrs={'class': 'a2a_kit a2a_kit_size_24 addtoany_list'}, ret='data-a2a-title')[0]
+        url = parseDOM2(item.content, 'a', attrs={'class': 'live-stream-button.+'})[0].attrs.get('data-source')
+        title = parseDOM2(item.content, 'div', attrs={'class': 'a2a_kit a2a_kit_size_24 addtoany_list'})[0].attrs.get('data-a2a-title')
         title = client.replaceHTMLCodes(title)
-        image = itertags_wrapper(item.text, 'img', attrs={'class': 'horizontal-thumbnail'}, ret='data-src')[0]
+        image = parseDOM2(item.content, 'img', attrs={'class': 'horizontal-thumbnail'})[0].attrs.get('data-src')
 
         data = {'title': title, 'image': image, 'url': url}
 
