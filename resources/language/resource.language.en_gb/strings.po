@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 
 msgctxt "#30001"
-msgid "Fashion TV Live"
+msgid "FashionTV.com"
 msgstr ""
 
 msgctxt "#30002"
@@ -42,6 +42,22 @@ msgstr ""
 
 msgctxt "#30007"
 msgid "No bookmarks found"
+msgstr ""
+
+msgctxt "#30008"
+msgid "General"
+msgstr ""
+
+msgctxt "#30009"
+msgid "Live Channels"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Search"
+msgstr ""
+
+msgctxt "#30011"
+msgid "No results were found"
 msgstr ""
 
 msgctxt "#30402"

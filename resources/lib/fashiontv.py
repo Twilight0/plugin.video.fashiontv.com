@@ -10,12 +10,12 @@
 
 from __future__ import absolute_import
 
-import json, re
+import json
 
-from tulip import directory, client, cache, control, bookmarks as _bookmarks
-from tulip.parsers import parseDOM2
+from tulip import directory, client, cache, control, bookmarks as bms
 from tulip.url_dispatcher import urldispatcher
-from tulip.compat import iteritems
+from tulip.compat import iteritems, is_py3
+from tulip.fuzzywuzzy import process
 from .constants import *
 from .utils import keys_registration
 
@@ -29,7 +29,20 @@ def root():
     self_list = [
         {
             'title': control.lang(30001),
-            'action': 'live'
+            'action': 'main'
+        }
+        ,
+        {
+            'title': control.lang(30009),
+            'action': 'playlist',
+            'query': '["9243291", "9243272", "9243509", "9243425", "10091955", "10091952", "9243338", "10041248"]',
+            'icon': 'live.jpg'
+        }
+        ,
+        {
+            'title': control.lang(30010),
+            'action': 'search',
+            'icon': 'search.jpg'
         }
         ,
         {
@@ -117,7 +130,7 @@ def yt_channels():
 @urldispatcher.register('bookmarks')
 def bookmarks():
 
-    self_list = _bookmarks.get()
+    self_list = bms.get()
 
     if not self_list:
         na = [{'title': control.lang(30007), 'action': None}]
@@ -126,7 +139,10 @@ def bookmarks():
 
     for i in self_list:
         bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
-        bookmark['delbookmark'] = i['url']
+        try:
+            bookmark['delbookmark'] = i['url']
+        except KeyError:
+            bookmark['delbookmark'] = i['query']
         i.update({'cm': [{'title': 30006, 'query': {'action': 'deleteBookmark', 'url': json.dumps(bookmark)}}]})
 
     control.sortmethods()
@@ -135,50 +151,134 @@ def bookmarks():
     directory.add(self_list, content='videos')
 
 
-@cache_function(1440)
-def list_live_items():
+@cache_function(3660)
+def loader():
 
-    html = client.request(main_link)
+    _json = client.request(main_json, output='json')
 
-    items = parseDOM2(html, 'article', attrs={'id': re.compile(r'stream-.+')})
+    pls = _json['playlists']
+    content = _json['content']
 
-    self_list = []
+    _playlists = []
+    contents = []
 
-    for item in items:
+    for p in pls:
 
-        url = parseDOM2(item.content, 'a', attrs={'class': 'live-stream-button.+'})[0].attrs.get('data-source')
-        title = parseDOM2(item.content, 'div', attrs={'class': 'a2a_kit a2a_kit_size_24 addtoany_list'})[0].attrs.get('data-a2a-title')
-        title = client.replaceHTMLCodes(title)
-        image = parseDOM2(item.content, 'img', attrs={'class': 'horizontal-thumbnail'})[0].attrs.get('data-src')
+        if not p['detailedCarousel']:
+            continue
+        data = {'title': p['name'], 'query': json.dumps(p['itemIds'])}
 
-        data = {'title': title, 'image': image, 'url': url}
+        _playlists.append(data)
 
-        self_list.append(data)
+    for c in content:
 
-    return self_list
+        vid = c['id']
+        title = c['title']
+        plot = c['description']
+        image = c['thumbnail_playlist']
+        duration = ['videoDuration']
+        is_live = ['is_live_streaming']
+        url = c['streamURL']
+        fanart = c['thumbnail']
+
+        data = {
+            'title': title, 'plot': plot, 'image': image, 'duration': duration,
+            'is_live': is_live, 'url': url, 'id': vid, 'fanart': fanart
+        }
+        contents.append(data)
+
+    return _playlists, contents
 
 
-@urldispatcher.register('live')
-def live():
+@urldispatcher.register('main')
+def main():
 
-    self_list = list_live_items()
+    self_list = loader()[0]
 
-    if self_list is None:
-        return
-
-    self_list = [dict(t) for t in {tuple(d.items()) for d in self_list}]
-
-    for item in self_list:
-
-        item.update({'action': 'play', 'isFolder': 'False'})
-        bookmark = dict((k, v) for k, v in iteritems(item) if not k == 'next')
-        bookmark['delbookmark'] = item['url']
-        item.update({'cm': [{'title': 30004, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+    for i in self_list:
+        i.update({'action': 'playlist'})
+        bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
+        bookmark['bookmark'] = i['query']
+        i.update({'cm': [{'title': 30004, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
 
     control.sortmethods()
     control.sortmethods('title')
 
     directory.add(self_list, content='videos')
+
+
+@urldispatcher.register('playlist', ['query'])
+def playlist(query):
+
+    self_list = loader()[1]
+
+    query = json.loads(query)
+
+    videos = [i for i in self_list if i['id'] in query]
+
+    for i in videos:
+        i.update({'action': 'play', 'isFolder': 'False'})
+        bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
+        bookmark['bookmark'] = i['url']
+        i.update({'cm': [{'title': 30004, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+
+    control.sortmethods()
+    control.sortmethods('title')
+
+    directory.add(videos, content='movies')
+
+
+@urldispatcher.register('search')
+def search():
+
+    input_str = control.inputDialog()
+
+    if not input_str:
+        return
+
+    items = loader()[1]
+
+    if is_py3:
+
+        titles = [i['title'] for i in items]
+
+        matches = [
+            titles.index(t) for t, s in process.extract(
+                input_str, titles, limit=20
+            ) if s >= 60
+        ]
+
+    else:
+
+        titles = [i['title'].encode('unicode-escape') for i in items]
+
+        matches = [
+            titles.index(t) for t, s in process.extract(
+                input_str.encode('unicode-escape'), titles, limit=20
+            ) if s >= 60
+        ]
+
+    data = []
+
+    for m in matches:
+        data.append(items[m])
+
+    if not data:
+
+        control.infoDialog(30011)
+
+        return
+
+    else:
+
+        for i in data:
+            i.update({'action': 'play', 'isFolder': 'False'})
+            bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
+            bookmark['bookmark'] = i['url']
+            i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+
+        control.sortmethods('title')
+        directory.add(data, infotype='movies')
 
 
 @urldispatcher.register('youtube', ['url'])
@@ -187,24 +287,6 @@ def yt(url):
     keys_registration()
 
     control.execute('Container.Update({},return)'.format(url))
-
-
-def resolve(url):
-
-    if 'megogo' in url:
-
-        vid = re.search(r'id=(\d+)', url).group(1)
-        url = 'https://embed.megogo.ru/aprx/stream?video_id={}'.format(vid)
-
-    html = client.request(url)
-
-    if 'megogo' in url:
-        js = json.loads(html)
-        stream = js.get('data', {}).get('src')
-    else:
-        stream = 'https:' + re.search(r"'(.+m3u8)'", html).group(1)
-
-    return stream
 
 
 @urldispatcher.register('play', ['url'])
@@ -220,17 +302,15 @@ def play(url):
 
     leia_plus = control.kodi_version() >= 18.0
 
-    stream = resolve(url)
-
-    if '.m3u8' in stream:
+    if '.m3u8' in url:
 
         manifest_type = 'hls'
         mimetype = 'application/vnd.apple.mpegurl'
 
-    elif '.mpd' in stream:
+    elif '.mpd' in url:
 
         manifest_type = 'mpd'
 
-    dash = addon_enabled and ('.m3u8' in stream or '.mpd' in stream)
+    dash = addon_enabled and ('.m3u8' in url or '.mpd' in url)
 
-    directory.resolve(stream, dash=dash and leia_plus, mimetype=mimetype, manifest_type=manifest_type)
+    directory.resolve(url, dash=dash and leia_plus, mimetype=mimetype, manifest_type=manifest_type)

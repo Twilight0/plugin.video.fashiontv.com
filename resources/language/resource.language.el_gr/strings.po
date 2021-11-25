@@ -17,8 +17,8 @@ msgid ""
 msgstr ""
 
 msgctxt "#30001"
-msgid "Fashion TV Live"
-msgstr "Ζωντανά από το Fashion TV"
+msgid "FashionTV.com"
+msgstr "FashionTV.com"
 
 msgctxt "#30002"
 msgid "Clear addon's cache"
@@ -43,6 +43,22 @@ msgstr "Διαγραφή από τους σελιδοδείκτες"
 msgctxt "#30007"
 msgid "No bookmarks found"
 msgstr "Δεν βρέθηκαν σελιδοδείκτες"
+
+msgctxt "#30008"
+msgid "General"
+msgstr "Γενικά"
+
+msgctxt "#30009"
+msgid "Live Channels"
+msgstr "Ζωντανές ροές"
+
+msgctxt "#30010"
+msgid "Search"
+msgstr ""
+
+msgctxt "#30011"
+msgid "No results were found"
+msgstr "Δεν βρέθηκαν αποτελέσματα"
 
 msgctxt "#30402"
 msgid "OK"
