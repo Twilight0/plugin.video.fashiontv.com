@@ -35,7 +35,7 @@ def root():
         {
             'title': control.lang(30009),
             'action': 'playlist',
-            'query': '["9243291", "9243272", "9243509", "9243425", "10091955", "10091952", "9243338", "10041248"]',
+            'query': '["10091955", "9243425", "10091952", "9243291", "9243509", "9243272", "10041248"]',
             'icon': 'live.jpg'
         }
         ,
@@ -156,15 +156,15 @@ def loader():
 
     _json = client.request(main_json, output='json')
 
-    pls = _json['playlists']
-    content = _json['content']
+    pls = list(_json['playlists'].values())
+    content = list(_json['content'].values())
 
     _playlists = []
     contents = []
 
     for p in pls:
 
-        if not p['detailedCarousel']:
+        if not p.get('detailedCarousel'):
             continue
         data = {'title': p['name'], 'query': json.dumps(p['itemIds'])}
 
