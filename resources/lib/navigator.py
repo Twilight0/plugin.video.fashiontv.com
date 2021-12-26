@@ -275,7 +275,7 @@ def search():
             i.update({'action': 'play', 'isFolder': 'False'})
             bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
             bookmark['bookmark'] = i['url']
-            i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+            i.update({'cm': [{'title': 30004, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
 
         control.sortmethods('title')
         directory.add(data, infotype='movies')
