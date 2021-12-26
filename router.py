@@ -14,7 +14,7 @@ import sys
 from tulip.compat import parse_qsl
 from tulip.url_dispatcher import urldispatcher
 # noinspection PyProtectedMember, PyUnresolvedReferences
-from resources.lib import fashiontv, utils
+from resources.lib import navigator, utils
 
 
 def main(argv=None):
